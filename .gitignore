@@ -35,3 +35,7 @@ Thumbs.db
 *.log
 scratch/
 results/scratch_matplotlib/
+
+# Frontend
+node_modules/
+frontend/dist/

@@ -61,7 +61,13 @@ All lower confidence bounds are strictly positive, confirming significant cross-
 ## 📁 Repository Structure
 
 ```
-cross_lingual_calibration/
+NLP_Multi_lingual-Project/
+├── backend/                    # FastAPI layer serving the web UI
+│   ├── main.py                 # API routes and request validation
+│   ├── services/               # Research data, demo calibration logic, file assets
+│   └── tests/                  # API + Streamlit-parity tests
+├── frontend/                   # React + TypeScript + Vite + Tailwind web app
+│   └── src/                    # pages/, components/, services/api.ts, styles/
 ├── configs/
 │   ├── model.yaml              # Gemma 3 4B NF4 quantization and generation parameters
 │   └── prompts.yaml            # Localized condition prompt templates & regex contracts
@@ -104,6 +110,7 @@ cross_lingual_calibration/
 │   ├── test_confidence.py                # Regex parser & confidence unit tests
 │   └── test_model_engine.py              # ModelEngine instantiation & tokenizer tests
 ├── pytest.ini
+├── package.json                # `npm run dev` starts backend + frontend
 ├── requirements.txt
 └── .env.example
 ```
@@ -119,8 +126,8 @@ cross_lingual_calibration/
 
 ### 1. Clone & Setup Environment
 ```bash
-git clone https://github.com/Naren0527/NLP.git
-cd NLP
+git clone https://github.com/Rahul2006MILLION/NLP_Multi_lingual-Project.git
+cd NLP_Multi_lingual-Project
 
 python -m venv .venv
 # On Windows:
@@ -159,17 +166,21 @@ python -u scripts/run_phase_5_empirical_full_scale.py \
 Execution supports atomic checkpointing and will automatically resume from the last completed record if interrupted.
 
 ### 5. Launch Interactive Multilingual UI
-Launch the comprehensive 7-page interactive research application:
+The 7-page research application is a React + TypeScript (Vite, Tailwind, Framer Motion) frontend in `frontend/`, served data by a FastAPI backend in `backend/`. Requires Node.js 20+.
 ```bash
-streamlit run app.py
+npm install      # installs frontend dependencies
+npm run dev      # starts FastAPI on :8000 and the web app on http://localhost:5173
 ```
+Set `PYTHON=.venv/bin/python npm run dev` to use your virtualenv. Backend tests: `pytest backend/tests -q`.
+See [`docs/ui_migration.md`](docs/ui_migration.md) for the Streamlit → web feature mapping and architecture.
+
 **Interactive UI Capabilities:**
 - **Page 1 (Research Overview):** Core research questions, pipeline diagrams, executive summaries.
 - **Page 2 (Live Multilingual Demo):** Interactive prompt playground across English, Hindi, Bengali, Telugu, and Tamil with intermediate candidate inspection (English pivot, fluent translation, arbitration notes) and Model 2 Platt scaling.
 - **Page 3 (Baseline vs. Mitigation):** Real-time comparative tables, accuracy gains (+46.1 pp), and relative error reduction.
 - **Page 4 (Calibration Analysis):** Equal-frequency quantile reliability diagrams, ECE curves, and Language-Shift Platt parameter shifts ($\delta_l$).
 - **Page 5 (Cross-Lingual Consistency):** 750 pairwise consistency matrix, LLM judge agreement (88.4%) vs grounded factual evidence consistency (28.7% - 37.3%).
-- **Page 6 (Strategy Experiments & Selective Answering):** Validation selection on $P_{\text{val}}$ ($N=30$) and Strategy E Accuracy-Coverage Pareto curve with interactive $\tau$ slider.
+- **Page 6 (Strategy Experiments & Selective Answering):** Validation selection on $P_{\text{val}}$ ($N=30$) and Strategy E Accuracy-Coverage Pareto curves.
 - **Page 7 (Research Report & Downloads):** Publication-ready paper viewer and one-click data/metrics download center.
 
 ### 6. Run Mitigation Benchmark
@@ -204,6 +215,6 @@ Full formal documentation is organized in `docs/`:
   year={2026},
   publisher={GitHub},
   journal={GitHub repository},
-  howpublished={\url{https://github.com/Naren0527/NLP}}
+  howpublished={\url{https://github.com/Rahul2006MILLION/NLP_Multi_lingual-Project}}
 }
 ```

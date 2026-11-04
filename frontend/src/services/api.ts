@@ -1,5 +1,7 @@
 import type {
   Calibration,
+  ChatMessage,
+  ChatStatus,
   Comparison,
   Consistency,
   DemoOptions,
@@ -74,4 +76,65 @@ export const api = {
   docs: (s?: AbortSignal) => request<DocSummary[]>("/api/docs", {}, s),
   doc: (slug: string, s?: AbortSignal) => request<Doc>(`/api/docs/${encodeURIComponent(slug)}`, {}, s),
   downloads: (s?: AbortSignal) => request<DownloadItem[]>("/api/downloads", {}, s),
+  chatStatus: (s?: AbortSignal) => request<ChatStatus>("/api/chat/status", {}, s),
+  streamChat: async (
+    messages: ChatMessage[],
+    onChunk: (text: string) => void,
+    signal?: AbortSignal,
+    model: string = "gemma3:4b",
+    temperature: number = 0.7,
+  ): Promise<void> => {
+    const res = await fetch(`${BASE_URL}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, model, stream: true, temperature }),
+      signal,
+    });
+
+    if (!res.ok) {
+      let detail = `${res.status} ${res.statusText}`;
+      try {
+        const body = await res.json();
+        if (typeof body.detail === "string") detail = body.detail;
+      } catch {
+        /* ignore */
+      }
+      throw new ApiError(detail, res.status);
+    }
+
+    if (!res.body) {
+      throw new ApiError("No response body received from server");
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith("data:")) continue;
+        const jsonStr = trimmed.replace(/^data:\s*/, "");
+        try {
+          const parsed = JSON.parse(jsonStr);
+          if (parsed.error) {
+            throw new ApiError(typeof parsed.error === "string" ? parsed.error : JSON.stringify(parsed.error));
+          }
+          const content = parsed.message?.content ?? "";
+          if (content) {
+            onChunk(content);
+          }
+        } catch (e) {
+          if (e instanceof ApiError) throw e;
+          // Ignore partial JSON parse errors
+        }
+      }
+    }
+  },
 };

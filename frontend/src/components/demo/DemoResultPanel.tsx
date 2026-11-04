@@ -101,7 +101,7 @@ export function DemoResultPanel({ result, running, error, stale }: Props) {
         </div>
       ) : (
         <motion.div
-          key={`${result.language}-${result.question_id}-${result.strategy}-${result.tau}`}
+          key={result.experiment_id || `${result.language}-${result.question_id}-${result.strategy}-${result.tau}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: stale || running ? 0.45 : 1, y: 0, transition: { duration: 0.4, ease } }}
           className="space-y-6"

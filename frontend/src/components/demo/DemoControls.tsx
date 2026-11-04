@@ -60,8 +60,16 @@ export function DemoControls({ options, value, onChange, onRun, running }: Props
 
   return (
     <GlassCard className="flex h-full flex-col p-6 sm:p-7">
-      <p className="text-sm text-fg-2">Input Configuration</p>
-      <p className="mt-2 text-2xl font-semibold tracking-tight">Prompt setup</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-fg-2">Input Configuration</p>
+          <p className="mt-2 text-2xl font-semibold tracking-tight">Prompt setup</p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-up/30 bg-up/10 px-2.5 py-1 text-xs font-medium text-up">
+          <span className="size-1.5 rounded-full bg-up animate-pulse" />
+          Gemma 3 4B
+        </span>
+      </div>
       <CardDivider className="my-6" />
 
       <div className="space-y-7">
@@ -79,11 +87,28 @@ export function DemoControls({ options, value, onChange, onRun, running }: Props
         <Field label="Benchmark Question">
           <div role="radiogroup" aria-label="Benchmark Question" className="-mx-3 space-y-0.5">
             {options.examples.map((ex) => (
-              <ChoiceRow key={ex.id} name="question" selected={value.example_index === ex.index} onClick={() => set("example_index", ex.index)}>
+              <ChoiceRow
+                key={ex.id}
+                name="question"
+                selected={!value.custom_question && value.example_index === ex.index}
+                onClick={() => {
+                  set("custom_question", "");
+                  set("example_index", ex.index);
+                }}
+              >
                 <span className="block text-[11px] uppercase tracking-wider text-fg-3">{ex.domain} · {ex.id}</span>
                 {ex.question_en}
               </ChoiceRow>
             ))}
+          </div>
+          <div className="mt-3">
+            <input
+              type="text"
+              value={value.custom_question || ""}
+              onChange={(e) => set("custom_question", e.target.value)}
+              placeholder="Or enter custom question in any language..."
+              className="w-full rounded-xl border border-white/[0.1] bg-white/[0.03] px-3.5 py-2 text-xs text-fg placeholder:text-fg-3/60 focus:border-white/40 focus:outline-none transition-colors"
+            />
           </div>
         </Field>
 
@@ -124,7 +149,7 @@ export function DemoControls({ options, value, onChange, onRun, running }: Props
         disabled={running}
         icon={running ? <Spinner /> : <Play className="size-4" />}
       >
-        {running ? "Calibrating…" : "Generate & Calibrate"}
+        {running ? "Evaluating Gemma 3 4B…" : "Generate & Calibrate"}
       </Button>
     </GlassCard>
   );

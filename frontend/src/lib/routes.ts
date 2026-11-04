@@ -2,6 +2,7 @@
 export const ROUTES = [
   { path: "/", nav: "Overview", streamlit: "1. Research Overview" },
   { path: "/demo", nav: "Demo", streamlit: "2. Live Multilingual Demo" },
+  { path: "/chat", nav: "Chat", streamlit: "Direct Chat with Gemma 3 4B" },
   { path: "/comparison", nav: "Results", streamlit: "3. Baseline vs. Mitigation" },
   { path: "/calibration", nav: "Calibration", streamlit: "4. Calibration Analysis (ECE & Curves)" },
   { path: "/consistency", nav: "Consistency", streamlit: "5. Cross-Lingual Consistency" },

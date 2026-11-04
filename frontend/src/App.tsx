@@ -11,6 +11,7 @@ const named = <K extends string>(load: () => Promise<Record<K, React.ComponentTy
   lazy(() => load().then((m) => ({ default: m[key] })));
 const OverviewPage = named(() => import("./pages/OverviewPage"), "OverviewPage");
 const DemoPage = named(() => import("./pages/DemoPage"), "DemoPage");
+const ChatPage = named(() => import("./pages/ChatPage"), "ChatPage");
 const ComparisonPage = named(() => import("./pages/ComparisonPage"), "ComparisonPage");
 const CalibrationPage = named(() => import("./pages/CalibrationPage"), "CalibrationPage");
 const ConsistencyPage = named(() => import("./pages/ConsistencyPage"), "ConsistencyPage");
@@ -60,6 +61,7 @@ export default function App() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={page(<OverviewPage />)} />
             <Route path="/demo" element={page(<DemoPage />)} />
+            <Route path="/chat" element={page(<ChatPage />)} />
             <Route path="/comparison" element={page(<ComparisonPage />)} />
             <Route path="/calibration" element={page(<CalibrationPage />)} />
             <Route path="/consistency" element={page(<ConsistencyPage />)} />

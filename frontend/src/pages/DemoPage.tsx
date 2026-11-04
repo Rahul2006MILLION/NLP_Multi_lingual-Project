@@ -11,7 +11,11 @@ import { api } from "../services/api";
 import type { DemoOptions, DemoRequest, DemoResult } from "../services/types";
 
 const sameRequest = (a: DemoRequest, b: DemoRequest) =>
-  a.language === b.language && a.example_index === b.example_index && a.strategy === b.strategy && a.tau === b.tau;
+  a.language === b.language &&
+  a.example_index === b.example_index &&
+  a.strategy === b.strategy &&
+  a.tau === b.tau &&
+  (a.custom_question || "") === (b.custom_question || "");
 
 function DemoWorkbench({ options }: { options: DemoOptions }) {
   const [req, setReq] = useState<DemoRequest>({
@@ -29,9 +33,10 @@ function DemoWorkbench({ options }: { options: DemoOptions }) {
     inflight.current?.abort();
     const ctrl = new AbortController();
     inflight.current = ctrl;
-    const sent = req;
+    const sent = { ...req };
     setRunning(true);
     setError(null);
+    setResult(null); // Clear previous result immediately so stale results are never shown
     api
       .runDemo(sent, ctrl.signal)
       .then((data) => setResult({ req: sent, data }))
@@ -64,8 +69,7 @@ export function DemoPage() {
           </PageHero>
           <p className="mx-auto mt-6 flex max-w-3xl items-start justify-center gap-2 text-center text-xs leading-relaxed text-fg-3">
             <Info className="mt-0.5 size-3.5 shrink-0" />
-            Answers come from the curated benchmark examples, and confidences come from the stored empirical rates and the fitted Model 2 parameters.
-            This page does not run Gemma live.
+            Powered by local Gemma 3 4B through Ollama. Answers, verbalized confidence, and cross-lingual mitigation candidates are generated live on your machine with Model 2 calibration.
           </p>
           <PageIntro
             title="Interactive Multilingual Answering & Calibration Demo"

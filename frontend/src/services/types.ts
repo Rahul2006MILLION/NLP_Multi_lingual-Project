@@ -54,9 +54,14 @@ export interface DemoRequest {
   example_index: number;
   strategy: StrategyKey;
   tau: number;
+  model?: string;
+  custom_question?: string;
+  num_generations?: number;
+  adaptive_sampling?: boolean;
 }
 
 export interface DemoResult {
+  experiment_id?: string;
   question_id: string;
   question_en: string;
   domain: string;
@@ -68,7 +73,7 @@ export interface DemoResult {
   final_answer: string | null;
   confidence: {
     raw_verbalized: number;
-    statistical: number;
+    statistical: number | null;
     calibrated: number;
     delta_vs_raw: number;
     is_abstained: boolean;
@@ -144,4 +149,18 @@ export interface DownloadItem {
   filename: string;
   available: boolean;
   url: string;
+}
+
+export interface ChatMessage {
+  id?: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+export interface ChatStatus {
+  connected: boolean;
+  target_model: string;
+  is_available: boolean;
+  models: string[];
+  error?: string | null;
 }

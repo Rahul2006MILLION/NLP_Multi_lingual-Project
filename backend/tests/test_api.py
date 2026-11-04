@@ -33,7 +33,7 @@ TAUS = [round(0.10 + 0.05 * i, 2) for i in range(17)]
 @pytest.mark.parametrize("example_index", range(len(CURATED_EXAMPLES)))
 def test_demo_matches_streamlit(lang, strategy, example_index):
     for tau in TAUS:
-        r = client.post("/api/demo/run", json={"language": lang, "example_index": example_index, "strategy": strategy, "tau": tau})
+        r = client.post("/api/demo/run", json={"language": lang, "example_index": example_index, "strategy": strategy, "tau": tau, "model": "reference"})
         assert r.status_code == 200
         body = r.json()
         raw, stat, cal, abst = streamlit_reference(lang, STREAMLIT_LABELS[strategy], tau)
@@ -50,7 +50,7 @@ def test_demo_matches_streamlit(lang, strategy, example_index):
 
 
 def test_demo_e_abstains_at_high_tau():
-    r = client.post("/api/demo/run", json={"language": "hi", "example_index": 0, "strategy": "E", "tau": 0.9}).json()
+    r = client.post("/api/demo/run", json={"language": "hi", "example_index": 0, "strategy": "E", "tau": 0.9, "model": "reference"}).json()
     assert r["status"] == "abstained" and r["final_answer"] is None
 
 
